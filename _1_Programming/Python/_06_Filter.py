@@ -2,7 +2,7 @@
 def is_palindrome(n):
     s = str(n)
     for i in range(len(s)):
-        if i>len(s):
+        if i>len(s)/2:
             break
         if s[i] != s[-i-1]:
             return False
