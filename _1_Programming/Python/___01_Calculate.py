@@ -21,8 +21,8 @@ def primes():
 
 
 for n in primes():
-    if N % n == 0:
+    if (N % n == 0):
         #if  N/n也为质数
         print(n,N/n)
-    if n >= N/2:
+    if n > N/n:
         break
