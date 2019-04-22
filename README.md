@@ -15,3 +15,6 @@
 
 ##### 1.1 Python
 [Python练习](https://github.com/Vancheung/TestEngineering/tree/master/_1_Programming/Python)
+
+##### 1.2 C#
+[C#练习](https://github.com/Vancheung/TestEngineering/tree/master/_1_Programming/CSharp)
