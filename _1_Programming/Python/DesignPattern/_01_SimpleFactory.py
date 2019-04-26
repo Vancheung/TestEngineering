@@ -23,6 +23,7 @@ class Op_Minus(Operation):
 
 # 工厂方法：在实例化工厂类时再取初始化运算类的对象
 def createOperate(op):
+    #使用字典映射函数（python没有switch语句）
     operators = {'+':Op_Add,'-':Op_Minus} #扩展时增加字典
     return operators[op]
 
