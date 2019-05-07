@@ -1,5 +1,6 @@
 import copy
 from collections import OrderedDict
+from PIL import Image
 # Prototype 类实现了原型设计模式
 class Prototype():
     def __init__(self):
@@ -15,7 +16,10 @@ class Prototype():
         found = self.objects.get(identifier)
         if not found:  # 字典的key不存在时，抛出异常
             raise ValueError('Incorrect object identifier: {}'.format(identifier))
-        obj = copy.deepcopy(found)  # 深复制对象
+        #obj = found.im.copy()
+        obj = copy.copy(found)  # 深复制对象
+
+        #Image image,image.copy()
         obj.__dict__.update(attr)  # 更新属性变量
         return obj
 
@@ -38,7 +42,43 @@ class Book():
             mylist.append('\n')
         return ''.join(mylist)
         # return str(mylist)  # 另一种方法
+# 图片类
+class Picture():
+    def __init__(self,path,**rest):
+        self.path = path
+        with Image.open(path) as self.im:
+            print('Image Open Success! Picture is {}'.format(self.im))
+        self.__dict__.update(rest)
 
+    def __str__(self):
+        mylist = []
+        ordered = OrderedDict(sorted(self.__dict__.items()))  # 强制保证元素有序
+        for i in ordered.keys():
+            mylist.append('{}: {}'.format(i, ordered[i]))  # 把每个属性加入mylist
+            mylist.append('\n')
+        return ''.join(mylist)
+
+    # def copy(self,identifier,**attr):
+    #     found = self.objects.get(identifier)
+    #     if not found:  # 字典的key不存在时，抛出异常
+    #         raise ValueError('Incorrect object identifier: {}'.format(identifier))
+    #     if(type(found)==type(Image)):
+    #         obj = found.copy()
+    #     else:
+    #         obj = copy.deepcopy(found)
+    #
+    #     obj.__dict__.update(attr)  # 更新属性变量
+    #     return obj
+
+def client2():
+    p1 = Picture('p1.png',name="panapple",shape='rect')
+    prototype = Prototype()
+    pid = 'picture1'
+    prototype.register(pid, p1)
+    p2 = prototype.clone(pid,name="pen++",edition=2)
+
+    for i in (p1,p2):
+        print(i)
 
 def client():
     b1 = Book('The C Programming Language', ('Brian W. Kernighan', 'Dennis M.Ritchie'),
@@ -56,3 +96,4 @@ def client():
 
 if __name__ == '__main__':
     client()
+    client2()
