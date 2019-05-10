@@ -1,22 +1,13 @@
-# View 实现还不够优雅
+# quotes = ('A man is not complete until he is married. Then he is finished.',
+#  'As I said before, I never repeat myself.',
+#  'Behind a successful man is an exhausted woman.',
+#  'Black holes really suck...', 'Facts are stubborn things.')
 
 # Model
 class QuoteModel():
     def __init__(self):
         self.quotes = []
     # 创建
-    def check_num(self,n):
-        # 把校验从Controller移到model
-        try:
-            n = int(n)
-            if (n < 1):  # 让索引变为从1开始
-                print("Index can't be less than 1!")
-                return False
-        except ValueError as err:
-            print("Incorrect index '{}'".format(n))
-            return False
-        return True
-
     def create(self,quote):
         try:
             self.quotes.append(quote)
@@ -27,34 +18,32 @@ class QuoteModel():
 
     # 读取
     def read(self,n):
-        if self.check_num(n):
-            try:
-                n = int(n)
-                value = self.quotes[n - 1]
-            except IndexError as err:
-                value =  'Not found!'
-        else:
-            value = 'Wrong index'
+        try:
+            n = int(n)
+            value = self.quotes[n - 1]
+        except IndexError as err:
+            value = 'Not found!'
         return value
 
 
     # 更新
     def update(self,n,quote):
-        if self.check_num(n):
-            try:
-                n = int(n)
-                self.quotes[n - 1] = quote
-                value = 'Update numbe {} to {} success!'.format(n,self.quotes[n-1])
-            except IndexError as err:
-                value =  'Not found!'
-        else:
-            value = 'Wrong index'
+        try:
+            self.quotes[n - 1] = quote
+            value = 'Update numbe {} to {} success!'.format(n, self.quotes[n - 1])
+        except IndexError as err:
+            value = 'Not found!'
+
         return value
+
     # 删除
     def delete(self,n):
-        if self.check_num(n):
-            n = int(n)
-            self.quotes.pop(n-1)
+        try:
+            quote = self.quotes.pop(n-1)
+            value = 'Remove {} Success!'.format(quote)
+        except IndexError as err:
+            value = 'Not found!'
+        return value
 
 
 # View
@@ -67,7 +56,7 @@ class QuoteTerminalView():
         print('Error: {}'.format(msg))
 
     def select_quote(self):
-        return input('Which quote number would you like to see? ')
+        return input('Which quote number would you like to process?(0 for none) ')
 
     def select_operation(self):
         return input('What do you want to do? ')
@@ -92,18 +81,25 @@ class QuoteTerminalController():
             if(op not in ('c','r','u','d')):
                 self.view.error('Wrong operation')
                 continue
-            elif op=='c':
-                n = self.view.add_quote()
-                valid_input = True
-            elif op =='u':
-                n = self.view.select_quote()
+
+            n = self.view.select_quote()
+            try:
+                n = int(n)
+                if (n < 0):  # 让索引变为从1开始
+                    print("Index can't be less than 1!")
+                    continue
+                else:
+                    valid_input = True
+            except ValueError as err:
+                print("Incorrect index '{}'".format(n))
+
+            if op in ('c','u'):
                 q = self.view.add_quote()
                 valid_input = True
-            else:
-                n = self.view.select_quote()
-                valid_input = True
 
-        if op=='u':
+        if op =='c':
+            result = self.op_pool[op](q)
+        elif op=='u':
             result = self.op_pool[op](n,q)
         else:
             result = self.op_pool[op](n)
