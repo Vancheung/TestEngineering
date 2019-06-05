@@ -1,0 +1,30 @@
+定义一个Schema类：
+    使用Schema参数初始化这个类√
+    定义一个parseSchema()方法：√
+        能够把Args对象中的schema参数解析为一个字典 √
+            重构解析方法，直接使用bool、int、str等类型关键字√
+        schema参数格式异常时的处理√
+    重构schema类，把defaultMap的操作移入√
+
+定义一个映射类defaultMap：
+    输入一个字符串（boolean、int、string）输出一个变量类型√
+        变量类型可以具有默认值（False，0，'')√
+
+定义一个Args类：
+    初始化：输入一个字符串（用户的命令行），一个解析过的defaultMap √
+    cmdParse():解析用户的命令行，输出一个参数标记与内容对应的字典√
+    isMatch():检查self.dic和self.df中，相同key的value是否匹配√
+        self.dic的value是个列表，需要遍历列表中每个值是否为对应type√
+
+    将参数列表对应到具体的类属性（logging等）√
+        可以通过类的get方法取到属性的值√
+
+    重构Args类，去掉一些与本类无关的变量√
+        只保留cmd，schema作为入参 √
+
+增加一个客户端测试方法：
+    客户端输入：schema、cmd √
+    输出：一个Args类，类中每个属性都可以获取 √
+    异常处理：
+        schema 异常时：输出{}：{}是不支持的参数类型 √
+        cmd输入有异常时： 输出参数类型不匹配，{} 参数的类型应是 {} √
