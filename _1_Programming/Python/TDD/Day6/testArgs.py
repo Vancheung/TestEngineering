@@ -1,63 +1,71 @@
 import unittest
 from Schema import Schema
-# from defaultMap import defaultMap
-from Args import Args
+from Args import *
 
-sch = 'l:bool p:int d:str'
-cmd = '-l -p 8080 -d /usr/logs'
+sch = 'l:bool,p:int,d:str'
+cmd = '-l -p 8080 -d /user/bin'
+
 
 class testCases(unittest.TestCase):
-    def testInitArgs(self):
-        schema = Schema('%s' % sch)
-        self.assertIsNotNone(schema)
+    def testSchema(self):
+        s = Schema(sch)
+        self.assertEqual(type(s.schema), dict)
+        self.assertEqual(s.getSchema('l'), bool)
+        self.assertEqual(s.getSchema('p'), int)
+        self.assertEqual(s.getSchema('d'), str)
 
-    def testWrongSchema(self):
+    def testWrongSchemaParse(self):
+        wrongsch = 'l:boo,p:int,d:str'
         try:
-            schema = Schema('l:boo')
+            Schema(wrongsch)
         except TypeError as e:
             print(e)
 
-    def testIsBoolean(self):        
-        schema = Schema('%s' % sch)    
-        self.assertTrue(schema.isBoolean('l',True))
-        self.assertTrue(schema.isBoolean('l',False))
-        self.assertFalse(schema.isBoolean('l',1))
-
-    def testIsInt(self):        
-        schema = Schema('%s' % sch)
-        self.assertTrue(schema.isInt('p', 8000))
-        self.assertFalse(schema.isInt('p', True))
-        self.assertFalse(schema.isInt('p', 'str'))
-
-    def testIsString(self):
-        schema = Schema('%s' % sch)
-        self.assertFalse(schema.isString('d', 8000))
-        self.assertFalse(schema.isString('d', True))
-        self.assertTrue(schema.isString('d', 'str'))
+    def testOtherSchemaParse(self):
+        othersch = 'l:boolean,p:INT,d:string'
+        try:
+            s = Schema(othersch)
+            self.assertEqual(s.getSchema('l'), bool)
+            self.assertEqual(s.getSchema('p'), int)
+            self.assertEqual(s.getSchema('d'), str)
+        except TypeError as e:
+            print(e)
 
     def testArgs(self):
-        schema = Schema('%s' % sch)
-        arg = Args(schema,cmd)
-        self.assertTrue(arg.isMatch())
+        arg = Args(cmd)
+        self.assertIsNotNone(arg)
+        # print(arg.cmdParse(cmd))
+        self.assertEqual(type(arg.cmd), dict)
 
-        argwrong = Args(schema,'-l -p abc -d /usr/logs')
+    def testIsMatch(self):
+        arg = Args(cmd)
+        schema = Schema(sch)
+        self.assertTrue(arg.isMatch(schema))
+        wrongarg = Args('-l -p aaa -d /user')
         try:
-            argwrong.isMatch()
+            wrongarg.isMatch(schema)
         except TypeError as e:
             print(e)
 
-    def testArgsSetProperty(self):
+    def testSetProperty(self):
+        arg = Args(cmd)
         schema = Schema(sch)
-        arg = Args(schema,cmd)
-        arg.cmdParse(cmd)
-        self.assertEqual(arg.logging,False)
-        self.assertEqual(arg.port,None)
-        self.assertEqual(arg.directory,None)
-        arg.setProperty()
-        self.assertEqual(arg.logging, True)
-        self.assertEqual(arg.port, 8080)
-        self.assertEqual(arg.directory, '/usr/logs')
+        self.assertEqual(arg.__getattribute__('logging'), False)
+        self.assertEqual(arg.__getattribute__('port'), None)
+        self.assertEqual(arg.__getattribute__('directory'), None)
+        try:
+            arg.setProperty(schema)
+            self.assertEqual(arg.__getattribute__('logging'), True)
+            self.assertEqual(arg.__getattribute__('port'), 8080)
+            self.assertEqual(arg.__getattribute__('directory'), '/user/bin')
+        except TypeError as e:
+            print(e)
 
+        other = Args('-p 8000 -d /user')
+        other.setProperty(schema)
+        self.assertEqual(other.__getattribute__('logging'), False)
+        self.assertEqual(other.__getattribute__('port'), 8000)
+        self.assertEqual(other.__getattribute__('directory'), '/user')
 
 
 if __name__ == '__main__':
