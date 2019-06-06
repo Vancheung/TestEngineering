@@ -1,40 +1,43 @@
-class Schema():
+class Schema:
     def __init__(self, schema):
-        self.df = self.setSchema(schema)
+        self.schema = self.Parse(schema)
 
-    def setSchema(self, schema):
-        dic = self.parseSchema(schema)
-        newdic = {}
-        types = {'bool': bool,
-                 'str': str,
-                 'int': int,
-                 'float': float,
-                 'list': list,
-                 'dict': dict}
-        for i in dic:
-            if dic[i] in types:
-                newdic[i] = types.get(dic[i])  # 'l':'bool' -> 'l':bool
-            else:
-                raise TypeError('Unsupported type {}, type should be in (bool,str,int,float,list,dict).'.format(dic[i]))
-        return newdic
-
-    def parseSchema(self, schema):
+    def Parse(self, sch):
         d = {}
-        for i in schema.strip().split(' '):
-            d[i.split(':')[0]] = i.split(':')[1]
+        types = {
+            'int': int,
+            'bool': bool,
+            'boolean': bool,
+            'float': float,
+            'string': str,
+            'str': str
+        }
+        for i in sch.strip().split(','):
+            key = i.split(':')[0]
+            value = i.split(':')[1].lower()
+            if value in types:
+                d[key] = types[value]
+            else:
+                raise TypeError('Wrong format, {} is not a legal type.'.format(value))
         return d
 
-    def isBoolean(self, key, value):
-        return isinstance(value, self.df[key])
+    def getSchema(self, key):
+        try:
+            return self.schema[key]
+        except:
+            ValueError('Wrong arg name!')
 
-    def isInt(self, key, value):
-        # isinstance(False,int) = True
-        if value == True or value == False:
+    def isBool(self, value):
+        if value == None or isinstance(value, bool):
+            return True
+        return False
+
+    def isInt(self, value):
+        if isinstance(value, bool):
             return False
         if isinstance(value, str) and value.isdigit():
             return True
-        else:
-            return isinstance(value, self.df[key])
+        return isinstance(value, int)
 
-    def isString(self, key, value):
-        return isinstance(value, self.df[key])
+    def isString(self, value):
+        return isinstance(value, str)
