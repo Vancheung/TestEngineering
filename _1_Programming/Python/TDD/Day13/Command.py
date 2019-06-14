@@ -1,51 +1,69 @@
+from Errors import *
 from Field import Field
+from Location import Location, Orientation
 from Rover import Rover
 
 
 class Command:
     def __init__(self, cmds):
-        self.rover = None
-        self.field = None
-        cmds = cmds.split(';')
-        for i in cmds:
-            self.Parse(i)
-
+        self.cmds = cmds
+        for i in self.cmds.split(';'):
+            if i:
+                self.Parse(i)
 
     def Parse(self, cmd):
-        if cmd[0] == 'I':  # 初始化区域
-            X = int(cmd.split(' ')[1])
-            Y = int(cmd.split(' ')[2])
-            self.setField(X, Y)
+        # "I 0,0 40,40
+        if cmd.split(' ')[0] == 'I':
+            self.ParseI(cmd)
             return
 
-        if cmd[0] == 'V':  # 初始化火星车
-            x = int(cmd.split(' ')[1])
-            y = int(cmd.split(' ')[2])
-            ori = cmd.split(' ')[3]
-            self.setRover(x, y, ori)
+        # cmd = 'O 5,3;O 2,1'
+        if cmd.split(' ')[0] == 'O':
+            self.ParseO(cmd)
             return
 
-        if cmd[0] == 'O':  # 初始化障碍
-            x = int(cmd.split(' ')[1])
-            y = int(cmd.split(' ')[2])
-            self.field.setObstacle(x,y)
+        # cmd = 'V 2,1 "N"'
+        if cmd.split(' ')[0] == 'V':
+            self.ParseV(cmd)
             return
 
+        self.ParseMove(cmd)
 
-        # 行走指令
-        if self.rover and self.field:
+
+
+    def ParseMove(self, cmd):
+        if self.field and self.rover:
             for i in cmd:
                 try:
-                    self.rover.func_map[i](self.field)
-                except Exception as e:
-                    raise e
+                    self.rover.movemap[i](self.field)
+                except Exception:
+                    raise WrongCommandError
         else:
-            raise Exception('Need nessary information: Field and Rover Location!')
+            raise InitError
 
+    def ParseV(self, cmd):
+        try:
+            x = int(cmd.split(' ')[1].split(',')[0])
+            y = int(cmd.split(' ')[1].split(',')[1])
+            self.rover = Rover(Location(x, y), Orientation(cmd.split(' ')[2]))
+        except:
+            raise WrongIndexError
 
-    def setField(self, X, Y):
-        self.field = Field(X, Y)
+    def ParseO(self, cmd):
+        try:
+            x = int(cmd.split(' ')[1].split(',')[0])
+            y = int(cmd.split(' ')[1].split(',')[1])
+            self.field.setObstacles((x, y))
+        except:
+            raise WrongIndexError
 
-    def setRover(self, x, y, ori):
-        self.rover = Rover((x, y), ori)
+    def ParseI(self, cmd):
+        try:
+            marginbeginx = int(cmd.split(' ')[1].split(',')[0])
+            marginbeginy = int(cmd.split(' ')[1].split(',')[1])
+            marginendx = int(cmd.split(' ')[2].split(',')[0])
+            marginendy = int(cmd.split(' ')[2].split(',')[1])
+            self.field = Field(Location(marginbeginx, marginbeginy), Location(marginendx, marginendy))
+        except:
+            raise WrongIndexError
 
