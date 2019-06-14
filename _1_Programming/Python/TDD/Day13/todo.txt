@@ -1,44 +1,44 @@
-区域信息： 长度X 宽度Y √ 障碍列表[(x1,y1),(x2,y2)]
-
-火星车：
-    位置信息：self.location √
-        地点：(x,y)  √
-        朝向: N,S,E,W √
-        重构朝向 √
-
-    接收指令方法：
-        移动：f,b exception(meetObstacle,outField)
-        转向: l,r √
-
-重构指令类：Cmd √
-    cmd = 'ffflbbbrf'
-    map = {
-        'f':moveFoward,
-        'b':moveBack,
-        'l':turnLeft,
-        'r':turnRight
-    }
-    初始化区域：I 80 80  √
-    初始化火星车位置：i 0 0 N √
+指令类：√
+    初始化：指令字符串（；分隔）->指令列表 √
+    指令解析方法：
+        初始化：
+            区域信息 I X Y √
+            障碍信息 O 5 3 √
+            火星车信息 V x y orient √
+        移动： FFFLBBBRF √
+            障碍、边界外异常处理
 
 
+区域类：√
+    边界X、Y
+    障碍obstacles列表
 
-超出区域：outField √
-    当区域起点与终点重合时（长度or宽度=球围）——从一边跑出，可以从另一边进入
-    当区域小于球体时，小车禁止超出区域√
+    初始化障碍列表方法：
+    查询某坐标是否为障碍方法：
 
-障碍处理：meetObstacle √
-    回报异常√
-    停止移动√
-    放弃后续指令√
 
-指令处理函数：Execute(cmds,rover)√
-    输入：指令集，火星车类√
+火星车类： √
+    location
+    朝向
 
-    输出：火星车类（location信息已发生变化）——Rover.getLocation()
-    异常处理：超出区域+遇到障碍√
+    移动方法：
+        moveForward ： 先判断newlocation是否符合移动条件，符合则修改self.location = newlocation
+        moveBack
+    转向方法：
+        turnLeft：修改orient
+        turnRight
 
-    try:
-        rover.map[cmd[i]]() for i in range(len(cmd))
-    except Exception as e:
-        print(e)
+
+location类： √
+    locationx
+    locationy
+
+    xAdd
+    yAdd
+    xMinus
+    yMinus
+
+Orientation类：√
+    orientation
+    turnPlus
+    turnMinus
