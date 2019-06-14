@@ -1,122 +1,116 @@
 import unittest
-from Rover import Rover, MeetObstacleException
-from Command import Command
 from Field import Field
-
-
+from Location import *
+from Rover import Rover
+from Command import Command
+from Errors import *
 class testCases(unittest.TestCase):
+    def testLocation(self):
+        location = Location(3,5)
+        self.assertEqual(location.x,3)
+        self.assertEqual(location.y,5)
+        self.assertEqual(xPlus(location), Location(4, 5))
+        self.assertEqual(xMinus(location),Location(2,5))
+        self.assertEqual(yPlus(location), Location(3, 6))
+        self.assertEqual(yMinus(location),Location(3,4))
+
+    def testField(self):
+        field = Field(Location(0,0),Location(100,100))
+        field.setObstacles((5,3),(0,0))
+        self.assertFalse(field.isObstacle(Location(0,1)))
+        self.assertTrue(field.isObstacle(Location(5,3)))
+        self.assertRaises(
+            OutFieldError,
+            field.setObstacles,
+            (-1, 0)
+        )
+
+
     def testRover(self):
-        rover = Rover((3, 5), 'N')
-        self.assertEqual(3, rover.x)
-        self.assertEqual(5, rover.y)
-        self.assertEqual('N', rover.orientation)
+        rover = Rover(Location(3,5),Orientation('N'))
+        self.assertEqual(rover.location.x,3)
+        self.assertEqual(rover.location.y,5)
+        self.assertEqual(rover.orientation,Orientation('N'))
 
-    def testMoveFoward(self):
-        rover = Rover((3, 5), 'N')
-        field = Field(100, 100)
-        rover.moveFoward(field)
-        self.assertEqual(3, rover.x)
-        self.assertEqual(6, rover.y)
-        self.assertEqual('N', rover.orientation)
-        rover = Rover((3, 5), 'S')
-        rover.moveFoward(field)
-        self.assertEqual(3, rover.x)
-        self.assertEqual(4, rover.y)
-        rover = Rover((3, 5), 'E')
-        rover.moveFoward(field)
-        self.assertEqual(4, rover.x)
-        self.assertEqual(5, rover.y)
-        rover = Rover((3, 5), 'W')
-        rover.moveFoward(field)
-        self.assertEqual(2, rover.x)
-        self.assertEqual(5, rover.y)
-
-    def testMoveBack(self):
-        rover = Rover((3, 5), 'N')
-        field = Field(100, 100)
+    def testMove(self):
+        rover = Rover(Location(3, 5), Orientation('N'))
+        field = Field(Location(0, 0), Location(100, 100))
+        rover.moveForward(field)
+        self.assertEqual(rover.location.x, 3)
+        self.assertEqual(rover.location.y, 6)
+        self.assertEqual(rover.orientation, Orientation('N'))
         rover.moveBack(field)
-        self.assertEqual(3, rover.x)
-        self.assertEqual(4, rover.y)
-        rover = Rover((3, 5), 'W')
-        rover.moveBack(field)
-        self.assertEqual(4, rover.x)
-        self.assertEqual(5, rover.y)
+        self.assertEqual(rover.location.y, 5)
 
-    def testTurnLeft(self):
-        rover = Rover((3, 5), 'N')
-        field = Field(100, 100)
-        rover.turnLeft(field)
-        self.assertEqual(3, rover.x)
-        self.assertEqual(5, rover.y)
-        self.assertEqual('W', rover.orientation)
-        rover.turnLeft(field)
-        self.assertEqual('S', rover.orientation)
-        rover.turnLeft(field)
-        self.assertEqual('E', rover.orientation)
-        rover.turnLeft(field)
-        self.assertEqual('N', rover.orientation)
+        rover = Rover(Location(3, 5), Orientation('W'))
+        rover.moveForward(field)
+        self.assertEqual(rover.location.x, 2)
+        self.assertEqual(rover.location.y, 5)
 
-    def testTurnRight(self):
-        field = Field(100, 100)
-        rover = Rover((3, 5), 'N')
+    def testTurn(self):
+        rover = Rover(Location(3, 5), Orientation('N'))
+        field = Field(Location(0, 0), Location(100, 100))
+        rover.turnLeft(field)
+        self.assertEqual(rover,Rover(Location(3,5),Orientation('W')))
+
+        rover = Rover(Location(3, 5), Orientation('E'))
+        rover.turnLeft(field)
+        self.assertEqual(rover, Rover(Location(3, 5), Orientation('N')))
+
+        rover = Rover(Location(3, 5), Orientation('N'))
         rover.turnRight(field)
-        self.assertEqual(3, rover.x)
-        self.assertEqual(5, rover.y)
-        self.assertEqual('E', rover.orientation)
-        rover.turnRight(field)
-        self.assertEqual('S', rover.orientation)
-        rover.turnRight(field)
-        self.assertEqual('W', rover.orientation)
-        rover.turnRight(field)
-        self.assertEqual('N', rover.orientation)
+        self.assertEqual(rover, Rover(Location(3, 5), Orientation('E')))
+
 
     def testCommand(self):
-        cmd = 'I 10 10;V 3 5 N'
+        cmd = 'I 0,0 40,40;'
         command = Command(cmd)
-        self.assertEqual(command.field.X, 10)
-        self.assertEqual(command.field.Y, 10)
-        self.assertEqual(command.rover.x, 3)
-        self.assertEqual(command.rover.y, 5)
-        self.assertEqual(command.rover.orientation, 'N')
+        self.assertEqual(command.field, Field(Location(0, 0),Location(40,40)))
+        cmd = 'O 5,3'
+        command.Parse(cmd)
+        self.assertEqual(command.field.obstacles,[(5,3)])
+        cmd = 'V 2,1 N'
+        command.Parse(cmd)
+        self.assertEqual(command.rover.location.x,2)
+        self.assertEqual(command.rover.location.y,1)
+        self.assertEqual(command.rover.orientation,Orientation('N'))
 
-        command.Parse('FFFLBBBRFR')
-        self.assertEqual(command.rover.orientation, 'E')
-        self.assertEqual(command.rover.x, 6)
-        self.assertEqual(command.rover.y, 9)
+    def testCommandMove(self):
+        cmd = 'I 0,0 40,40;V 2,1 N'
+        command = Command(cmd)
+        self.assertEqual(command.field, Field(Location(0, 0), Location(40, 40)))
+        self.assertEqual(command.rover.location.x, 2)
+        self.assertEqual(command.rover.location.y, 1)
+        self.assertEqual(command.rover.orientation, Orientation('N'))
+        move = 'FFFLBBBRF'
+        command.Parse(move)
+        self.assertEqual(command.rover.location.x, 5)
+        self.assertEqual(command.rover.location.y, 5)
+        self.assertEqual(command.rover.orientation, Orientation('N'))
 
-    def testWithoutInit(self):
-        cmd = 'FFFLBBBRFR'
+    def testWrongMove(self):
+        cmd = 'I 0,0 10,10;V 2,1 N;O 2,3 6,6'
+        command = Command(cmd)
+        move = 'FFFLBBBRF'
         try:
-            Command(cmd)
+            command.Parse(move)
         except Exception as e:
-            self.assertIsNotNone(e)
+            print(e)
+        self.assertEqual(command.rover.location.x, 2)
+        self.assertEqual(command.rover.location.y, 2)
+        self.assertEqual(command.rover.orientation, Orientation('N'))
 
-    def testOutField(self):
-        cmd = 'I 10 8;V 3 5 N'
+    def testWrongMove2(self):
+        cmd = 'I 0,0 10,10;V 2,1 N;'
         command = Command(cmd)
-        self.assertEqual(command.field.X, 10)
-        self.assertEqual(command.field.Y, 8)
-        self.assertEqual(command.rover.x, 3)
-        self.assertEqual(command.rover.y, 5)
-        self.assertEqual(command.rover.orientation, 'N')
+        move = 'FFFFFFFFFFFF'
         try:
-            command.Parse('FFFLBBBRFR')
+            command.Parse(move)
         except Exception as e:
-            self.assertIsNotNone(e)
-        self.assertEqual(command.rover.orientation, 'N')
-        self.assertEqual(command.rover.x, 6)
-        self.assertEqual(command.rover.y, 8)
-
-    def testSetObstacle(self):
-        cmd = 'I 10 8;O 5 3;O 0 0;V 5 2 N'
-        command = Command(cmd)
-        self.assertRaises(
-            MeetObstacleException,
-            command.Parse,
-            'FFFLBBBRFR'
-        )
-        self.assertEqual(command.rover.x, 5)
-        self.assertEqual(command.rover.y, 2)
+            print(e)
+        self.assertEqual(command.rover.location.x, 2)
+        self.assertEqual(command.rover.location.y, 10)
+        self.assertEqual(command.rover.orientation, Orientation('N'))
 
 
 if __name__ == '__main__':
