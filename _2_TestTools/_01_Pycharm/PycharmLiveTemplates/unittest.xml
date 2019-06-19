@@ -1,0 +1,34 @@
+<templateSet group="unittest">
+  <template name="ae" value="self.assertEqual($object1$,$object2$)" description="assertEqual" toReformat="false" toShortenFQNames="true">
+    <variable name="object1" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="object2" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="testmain" value="import unittest&#10;class testCases(unittest.TestCase):&#10;    def $object$(self):&#10;    &#10;if __name__ == '__main__':&#10;    unittest.main()" description="class testCases(unittest.Testcase)" toReformat="false" toShortenFQNames="true">
+    <variable name="object" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="case" value="def test$Funcname$(self):&#10;    &quot;&quot;&quot;$docstring$    &#10;    &quot;&quot;&quot;&#10;    $END$" description="def testCase(self):" toReformat="false" toShortenFQNames="true">
+    <variable name="Funcname" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="docstring" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="at" value="self.assertTrue($object1$)" description="assertTrue" toReformat="false" toShortenFQNames="true">
+    <variable name="object1" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="af" value="self.assertFalse($object$)" description="assertFalse" toReformat="false" toShortenFQNames="true">
+    <variable name="object" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+</templateSet>
