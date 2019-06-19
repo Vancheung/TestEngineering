@@ -1,0 +1,18 @@
+<templateSet group="ABC">
+  <template name="abcimport" value="from abc import ABCMeta, abstractmethod" description="from abc import ABCMeta, abstractmethod" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="abclass" value="class $classname$(metaclass=ABCMeta):&#10;    $END$" description="class $classname$(metaclass=ABCMeta):" toReformat="false" toShortenFQNames="true">
+    <variable name="classname" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+  <template name="abmethod" value="@abstractmethod" description="@abstractmethod" toReformat="false" toShortenFQNames="true">
+    <context>
+      <option name="Python" value="true" />
+    </context>
+  </template>
+</templateSet>
