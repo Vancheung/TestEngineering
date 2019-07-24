@@ -28,7 +28,7 @@
 
 ### 3.Learning
 
-##### 2.1 Python
-[精通Python设计模式]()
+##### 3.1 Python
+[精通Python设计模式](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_01_Python/%E7%B2%BE%E9%80%9APython%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)
 
 
