@@ -24,3 +24,11 @@
 
 ##### 2.1 PyCharm
 [Pycharm Live Templates](https://github.com/Vancheung/TestEngineering/tree/master/_2_TestTools/_01_Pycharm/PycharmLiveTemplates)
+
+
+### 3.Learning
+
+##### 2.1 Python
+[精通Python设计模式]()
+
+
