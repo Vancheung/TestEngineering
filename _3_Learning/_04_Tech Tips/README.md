@@ -6,4 +6,4 @@
 
 2019/08/19
 
-[【Python】从函数式编程的角度理解Python中的map/reduce/filter/yield](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/)
+[【Python】从函数式编程的角度理解Python中的map/reduce/filter/yield](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20190819_Function_Programming_and_Python_Map&Reduce&Filter.md)
