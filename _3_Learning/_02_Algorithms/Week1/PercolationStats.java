@@ -3,9 +3,10 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
-    private double[] probability;
-    private double mean = 0.0f;
-    private double stddev = 0.0f;
+    public static final double ONE_POINT_96 = 1.96;
+    private final double[] probability;
+    private double mean = 0.0d;
+    private double stddev = 0.0d;
 
     // perform independent trials on an n-by-n grid
     public PercolationStats(int n, int trials) {
@@ -26,40 +27,40 @@ public class PercolationStats {
 
     // sample mean of percolation threshold
     public double mean() {
-        if (Double.compare(0.0f, mean) == 0)
+        if (Double.compare(0.0d, mean) == 0)
             mean = StdStats.mean(probability);
         return mean;
     }
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        if (Double.compare(0.0f, stddev) == 0)
+        if (Double.compare(0.0d, stddev) == 0)
             stddev = StdStats.stddev(probability);
         return stddev;
     }
 
     // low endpoint of 95% confidence interval
     public double confidenceLo() {
-        return mean - 1.96 * stddev / Math.sqrt(probability.length);
+        return mean - ONE_POINT_96 * stddev / Math.sqrt(probability.length);
     }
 
     // high endpoint of 95% confidence interval
     public double confidenceHi() {
-        return mean + 1.96 * stddev / Math.sqrt(probability.length);
+        return mean + ONE_POINT_96 * stddev / Math.sqrt(probability.length);
     }
 
     // test client (see below)
     public static void main(String[] args) {
-        int n = Integer.parseInt(args[0]);
-        int times = Integer.parseInt(args[1]);
+        int n = 20;
+        int times = 10;
         PercolationStats stats = new PercolationStats(n, times);
         System.out.println("mean                    = " + stats.mean());
         System.out.println("stddev                  = " + stats.stddev());
         System.out.println("95% confidence interval = ["
-                + stats.confidenceLo()
-                + ", "
-                + stats.confidenceHi()
-                + "]");
+                                   + stats.confidenceLo()
+                                   + ", "
+                                   + stats.confidenceHi()
+                                   + "]");
     }
 }
 
