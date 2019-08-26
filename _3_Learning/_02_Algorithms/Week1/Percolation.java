@@ -4,6 +4,7 @@ public class Percolation {
 
     //    private WeightedQuickUnionUF uf_top;
     private final WeightedQuickUnionUF ufTopBottom;
+    private final WeightedQuickUnionUF ufTop;
     private final int n, top, bottom;
     private boolean[] nodesOpen;
 
@@ -18,6 +19,7 @@ public class Percolation {
         //        int mapsize = this.n + 2;
         //        uf_top = new WeightedQuickUnionUF(mapsize * mapsize + 1);
         ufTopBottom = new WeightedQuickUnionUF(n * n + 2);
+        ufTop = new WeightedQuickUnionUF(n * n + 1);
 
 
         nodesOpen = new boolean[this.n * this.n + 1];
@@ -32,8 +34,10 @@ public class Percolation {
 
         int index = transindex(row, col);
         nodesOpen[index] = true;
-        if (row == 1)
+        if (row == 1) {
             ufTopBottom.union(top, index);
+            ufTop.union(top, index);
+        }
         if (row == n)
             ufTopBottom.union(bottom, index);
 
@@ -47,14 +51,19 @@ public class Percolation {
         if (validate(col + 1) && nodesOpen[transindex(row, col + 1)])
             around[3] = transindex(row, col + 1);
         for (int i = 0; i < around.length; i++)
-            if (around[i] != -1)
+            if (around[i] != -1) {
                 ufTopBottom.union(around[i], index);
+                ufTop.union(around[i], index);
+            }
 
     }
 
     private void checkInput(int row, int col) {
-        if (!validate(row) || (!validate(col)))
-            throw new IllegalArgumentException("Wrong Value! Please check your Input!");
+        if (!validate(row))
+            throw new IllegalArgumentException("row index must be between 1 and " + this.n + ": 0");
+        if (!validate(col))
+            throw new IllegalArgumentException(
+                    "column index must be between 1 and " + this.n + ": 0");
     }
 
     // is the site (row, col) open?
@@ -67,7 +76,7 @@ public class Percolation {
     // is the site (row, col) full?
     public boolean isFull(int row, int col) {
         checkInput(row, col);
-        return ufTopBottom.connected(top, transindex(row, col));
+        return ufTop.connected(top, transindex(row, col));
     }
 
     // returns the number of open sites
@@ -98,12 +107,21 @@ public class Percolation {
 
     // Percolation.test client (optional)
     public static void main(String[] args) {
-        Percolation pc = new Percolation(6);
+        Percolation pc = new Percolation(3);
+        // System.out.println(pc.percolates());
+        pc.open(1, 3);
+        System.out.println(pc.isFull(1, 3));
+        pc.open(2, 3);
+        System.out.println(pc.isFull(2, 3));
+        pc.open(3, 3);
+        System.out.println(pc.isFull(3, 3));
         System.out.println(pc.percolates());
-        pc.open(1, 6);
-        pc.open(2, 6);
-        System.out.println(pc.percolates());
-        System.out.println(pc.numberOfOpenSites());
+        pc.open(3, 1);
+        pc.open(2, 1);
+        pc.open(1, 1);
+        // System.out.println(pc.isFull(3,1));
+        // System.out.println(pc.percolates());
+        // System.out.println(pc.numberOfOpenSites());
 
     }
 }
