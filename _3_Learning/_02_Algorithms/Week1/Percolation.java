@@ -35,11 +35,11 @@ public class Percolation {
         int index = transindex(row, col);
         nodesOpen[index] = true;
         if (row == 1) {
-            ufTopBottom.union(top, index);
-            ufTop.union(top, index);
+            ufTopBottom.union(index, top);
+            ufTop.union(index, top);
         }
         if (row == n)
-            ufTopBottom.union(bottom, index);
+            ufTopBottom.union(index, bottom);
 
         int[] around = { -1, -1, -1, -1 };
         if (validate(row - 1) && nodesOpen[transindex(row - 1, col)])
@@ -52,8 +52,8 @@ public class Percolation {
             around[3] = transindex(row, col + 1);
         for (int i = 0; i < around.length; i++)
             if (around[i] != -1) {
-                ufTopBottom.union(around[i], index);
-                ufTop.union(around[i], index);
+                ufTopBottom.union(index, around[i]);
+                ufTop.union(index, around[i]);
             }
 
     }
@@ -117,8 +117,11 @@ public class Percolation {
         System.out.println(pc.isFull(3, 3));
         System.out.println(pc.percolates());
         pc.open(3, 1);
+        System.out.println(pc.isFull(3, 1));
         pc.open(2, 1);
+        System.out.println(pc.isFull(3, 2));
         pc.open(1, 1);
+        System.out.println(pc.isFull(3, 1));
         // System.out.println(pc.isFull(3,1));
         // System.out.println(pc.percolates());
         // System.out.println(pc.numberOfOpenSites());
