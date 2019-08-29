@@ -19,7 +19,7 @@ public class PercolationStats {
         for (int i = 0; i < trials; i++) {
             Percolation pc = new Percolation(n);
             while (!pc.percolates()) {
-                pc.open(StdRandom.uniform(n), StdRandom.uniform(n));
+                pc.open(StdRandom.uniform(n) + 1, StdRandom.uniform(n) + 1);
             }
             probability[i] = (double) pc.numberOfOpenSites() / (n * n);
         }
@@ -51,8 +51,8 @@ public class PercolationStats {
 
     // test client (see below)
     public static void main(String[] args) {
-        int n = 20;
-        int times = 10;
+        int n = Integer.parseInt(args[0]);
+        int times = Integer.parseInt(args[1]);
         PercolationStats stats = new PercolationStats(n, times);
         System.out.println("mean                    = " + stats.mean());
         System.out.println("stddev                  = " + stats.stddev());
@@ -61,6 +61,8 @@ public class PercolationStats {
                                    + ", "
                                    + stats.confidenceHi()
                                    + "]");
+
+
     }
 }
 
