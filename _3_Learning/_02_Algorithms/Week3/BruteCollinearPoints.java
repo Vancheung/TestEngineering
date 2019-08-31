@@ -64,7 +64,7 @@ public class BruteCollinearPoints {
     }
 
     private boolean sameas(double a, double b) {
-        if (a == b || a + b == 0)
+        if (Double.compare(a, b) == 0 || Double.compare(a + b, 0.0d) == 0)
             return true;
         return false;
     }
