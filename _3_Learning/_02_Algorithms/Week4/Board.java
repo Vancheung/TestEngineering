@@ -4,7 +4,7 @@ import edu.princeton.cs.algs4.StdRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Board {
+public class Board implements HelloWorld.Comparable<Board> {
 
     private final int[][] blocks;
     private final int n;
@@ -127,7 +127,7 @@ public class Board {
             Board tmpb = new Board(arr);
             neighbor.add(tmpb);
         }
-        if (blankposx < n - 1) {
+        if (blankposy < n - 1) {
             int[][] arr = exchage(blankposx, blankposy + 1);
             Board tmpb = new Board(arr);
             neighbor.add(tmpb);
@@ -154,6 +154,10 @@ public class Board {
         int uniform = StdRandom.uniform(neibor.size());
         return neibor.get(uniform);
 
+    }
+
+    public int compareTo(Board that) {
+        return this.manhattan() - that.manhattan();
     }
 
     // unit testing (not graded)
