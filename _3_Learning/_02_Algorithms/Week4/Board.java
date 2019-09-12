@@ -4,7 +4,7 @@ import edu.princeton.cs.algs4.StdRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Board implements HelloWorld.Comparable<Board> {
+public class Board {
 
     private final int[][] blocks;
     private final int n;
@@ -17,12 +17,16 @@ public class Board implements HelloWorld.Comparable<Board> {
         // Storing a copy of the object is better approach in many situations
         this.n = tiles.length;
         this.blocks = Arrays.copyOf(tiles, n);  // deep copy
+        zeroindex();
+    }
+
+    private void zeroindex() {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (blocks[i][j] == 0) {
                     this.blankposx = i;
                     this.blankposy = j;
-                    break;
+                    return;
                 }
             }
         }
@@ -136,7 +140,7 @@ public class Board implements HelloWorld.Comparable<Board> {
     }
 
     private int[][] exchage(int targetx, int targety) {
-        int arr[][] = new int[n][n];
+        int[][] arr = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 arr[i][j] = blocks[i][j];
@@ -156,7 +160,7 @@ public class Board implements HelloWorld.Comparable<Board> {
 
     }
 
-    public int compareTo(Board that) {
+    private int compareTo(Board that) {
         return this.manhattan() - that.manhattan();
     }
 
