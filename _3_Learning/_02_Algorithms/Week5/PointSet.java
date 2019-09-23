@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.RectHV;
@@ -66,7 +67,17 @@ public class PointSET {
     public static void main(
             String[] args)                  // unit testing of the methods (optional)
     {
+        String filename = args[0];
+        In in = new In(filename);
+        PointSET brute = new PointSET();
 
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            brute.insert(p);
+        }
+        brute.draw();
     }
-    
+
 }
