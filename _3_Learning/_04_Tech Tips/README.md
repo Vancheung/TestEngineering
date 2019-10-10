@@ -11,3 +11,8 @@
 2019/09/16
 
 [Python数据结构（1）——Python内置类型list、set、dict原理浅析](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20190916_Python_Data_Structure.md)
+
+2019/10/10
+
+[[Python标准库][1]sys——系统相关的参数和函数]
+(https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191010_Python_sys_module.md)
