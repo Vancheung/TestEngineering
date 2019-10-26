@@ -1,9 +1,9 @@
 from codecs import open
 from time import time, sleep
 from configparser import ConfigParser
-from sys import argv
 
-from src.slave import Db
+from src.DataOperation.SlaveDb import SlaveDb
+from src.slave import CONFIG_PATH, DBPATH
 from src.slave.perf import total_perf, proc_perf
 
 
@@ -13,7 +13,7 @@ def client(dbpath):
     :return:
     """
     start_time = time()
-    d = Db.Db(dbpath)
+    d = SlaveDb(dbpath)
     if RUNTIME <= 0:
         while True:
             record(d)
@@ -35,8 +35,6 @@ def record(d):
 
 if __name__ == '__main__':
     cfg = ConfigParser()
-    CONFIG_PATH = argv[1]
-    DBPATH = argv[2]
     cfg.read_file(open(CONFIG_PATH, "r", "utf-8-sig"))
     RUNTIME = cfg.getint('Setting', 'RUNTIME')
     INTERVAL = cfg.getint('Setting', 'INTERVAL')
