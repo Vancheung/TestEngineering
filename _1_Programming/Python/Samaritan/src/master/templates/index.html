@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>性能监视仪表盘</title>
+</head>
+<body>
+<div class="container">
+    <div class="row" id="dashboard">
+        <h5>被监控的服务器列表</h5>
+        <div>
+            {% for item in arr %}
+            <div class="artical">
+                <a href="/slave/{{item}}">
+                    <span class="grey-text small-text" id="item">{{item}}</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+</html>
