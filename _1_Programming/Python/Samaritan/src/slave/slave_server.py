@@ -1,11 +1,9 @@
-from sys import argv
-
-from src.slave.Db import Db
-from src.slave import TOTAL_PERF
+from src.DataOperation.SlaveDb import SlaveDb
+from src.slave import TOTAL_PERF, DBPATH
 from flask import Flask, request, g
 from flask_restful import Resource, Api
 
-DEBUG_SETTING = False
+DEBUG_SETTING = True
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,7 +12,7 @@ api = Api(app)
 class Data(Resource):
 
     def get(self):
-        d = Db(DBPATH)
+        d = SlaveDb(DBPATH)
         g.db = d.conn
         item = request.args.get('item')
         start_time = request.args.get('start_time')
@@ -32,6 +30,5 @@ def teardown_request(exception):
 api.add_resource(Data, '/data')
 
 if __name__ == '__main__':
-    DBPATH = argv[1]
     print('Server is running......')
     app.run(host='0.0.0.0', debug=DEBUG_SETTING)
