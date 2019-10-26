@@ -7,13 +7,14 @@ def total_perf():
     整机性能数据记录
     :return:
     """
-    return str((cpu_percent(),
-                virtual_memory().percent,
-                disk_usage('/').percent,
-                disk_io_counters().read_count,
-                disk_io_counters().write_count,
-                net_io_counters().packets_sent,
-                net_io_counters().packets_recv))
+    return (cpu_percent(),
+            virtual_memory().percent,
+            disk_usage('/').percent)
+    # 预留功能
+    # disk_io_counters().read_count,
+    # disk_io_counters().write_count,
+    # net_io_counters().packets_sent,
+    # net_io_counters().packets_recv))
 
 
 def proc_perf(pname):
