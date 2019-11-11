@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>性能监视仪表盘</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row" id="totalboard">
+        <div class="total_perf">
+                <a href="/slave/{{slave_ip}}/total">
+                    整体性能数据
+                </a>
+            </div>
+    </div>
+    <div class="row" id="dashboard">
+        <h5>被监控的进程列表</h5>
+        <div>
+            {% for item in arr %}
+            <div class="artical">
+                <a href="/pid/{{slave_ip}}/{{item[0]}}">
+                    <span class="grey-text small-text" id="item">{{item}}</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+</html>
