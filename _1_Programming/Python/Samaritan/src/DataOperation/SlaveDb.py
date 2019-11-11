@@ -1,108 +1,169 @@
-from sqlite3 import connect
+from time import strftime, localtime
 
-from src.DataOperation.sql_common import select_from_table, \
-    create_table_factory, insert_factory, select_oldest_from_table
-from src.slave import TOTAL_PERF, PROC_PERF
+from src.slave import SELECT_LIMIT
 
 
-class SlaveDb:
-    def __init__(self, dbpath):
-        self.conn = connect(dbpath)
-        self.init_table()
+def logging(func):
+    """
+    使用装饰器打印操作日志
+    :param func:
+    :return:
+    """
 
-    def init_table(self):
-        self.execute_sql(create_table_factory, 'total', TOTAL_PERF)
-        self.execute_sql(create_table_factory, 'proc', PROC_PERF)
+    def wrapper(self, *args, **kwargs):
+        print('Operation {}, at {}!'.format(func, strftime("%Y-%m-%d %H:%M:%S",
+                                                           localtime())))
+        return func(self, *args, **kwargs)
 
-    def insert_total(self, item):
-        """
-        插入整机性能数据
-        :param item:
-        :return:
-        """
-        self.execute_sql(insert_factory, 'total', TOTAL_PERF, item)
+    return wrapper
 
-    def insert_proc(self, item):
-        """
-        插入进程性能数据
-        :param item:
-        :return:
-        """
-        if isinstance(item, list) or isinstance(item, tuple):
-            self.execute_many_sql(item, insert_factory, 'proc', PROC_PERF)
-        else:
-            self.execute_sql(insert_factory, 'proc', PROC_PERF, item)
 
-    def select(self, table, item=None, start_time=None, end_time=None):
-        """
-        获取整表数据
-        :param start_time: datetime.utcnow().timestamp()
-        :param end_time: datetime.utcnow().timestamp()
-        :param table: 表名(str)
-        :param item: 列名(str)
-        :return:
-        """
-        if start_time == 0 or start_time=='0':
-            # 传入start_time参数并且参数值为0
-            # 只发生在该节点第一次被加入slave时
-            cursor = self.execute_sql(select_oldest_from_table, table)
-        else:
-            cursor = self.execute_sql(select_from_table, table, start_time,
-                                      end_time, item)
-        return cursor.fetchall()
+def create_table_factory(tbl_type, tbl_name):
+    """
+    创建数据表的工厂函数
+    :param tbl_type:数据表类型
+    :param tbl_name:
+    :return:
+    """
+    tbl_map = {
+        'total': create_total_perf_table,
+        'proc': create_proc_perf_table
+        # 'master': create_master_slave_table
+    }
+    return tbl_map.get(tbl_type)(tbl_name)
 
-    def execute_sql(self, func, *args, **kwargs):
-        """
-        执行sql语句
-        :param func: 对应 sql_common中的某一个函数
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        c = self.conn.cursor()
-        query = func(*args, **kwargs)
-        try:
-            cursor = c.execute(query)
-            self.conn.commit()
-        except Exception:
-            raise
-        return cursor
 
-    def execute_many_sql(self, data, func, *args, **kwargs):
-        """
-        一次执行多条语句（当前只应用于插入）
-        :param data: 数据（tuple或list）
-        :param func: 执行的查询语句
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        c = self.conn.cursor()
-        query = func(*args, **kwargs)
-        try:
-            cursor = c.executemany(query, data)
-            self.conn.commit()
-        except Exception:
-            raise
-        return cursor
+def insert_factory(tbl_type, *args, **kwargs):
+    """
+    插入数据的工厂函数
+    :param tbl_type:数据表类型
+    :param args:
+    :param kwargs:
+    :return:
+    """
+    tbl_map = {
+        'total': insert_to_total_perf,
+        'proc': insert_to_proc_perf
+    }
+    return tbl_map.get(tbl_type)(*args, **kwargs)
 
-    def get_result_0(self, func, *args, **kwargs):
-        """
-        获取执行结果中第0列的内容（用于select 某一列）
-        :param func:
-        :param args:
-        :param kwargs:
-        :return: list
-        """
-        return [col[0] for col in
-                self.execute_sql(func, *args, **kwargs).fetchall()]
 
-    def get_result_1(self, func, *args, **kwargs):
-        """
-        获取执行结果中第0行第0列个元素（用于获取时间）
-        :param func:
-        :param args:
-        :param kwargs:
-        :return: one element
-        """
-        return self.execute_sql(func, *args, **kwargs).fetchone()[0]
+@logging
+def select_from_table(tbl_name, start_time=None, end_time=None, item=None,
+                      time_column="TIME", select_limit=SELECT_LIMIT) -> str:
+    """
+    查询数据的函数（不需要区分数据表类型）
+    :param time_column:
+    :param select_limit:
+    :param tbl_name:
+    :param start_time:
+    :param end_time:
+    :param item:
+    :return:
+    """
+    item = '*' if not item else item
+    query = "SELECT * FROM {}".format(tbl_name)
+    if start_time:
+        query += " WHERE strftime('%s',[time]) > strftime('%s','{}')".format(
+            strftime("%Y-%m-%d %H:%M:%S", localtime(float(start_time))))
+    if end_time:
+        query += " AND strftime('%s',[time]) < strftime('%s','{}')".format(
+            strftime("%Y-%m-%d %H:%M:%S", localtime(float(end_time))))
+    query += ' order by "TIME"'
+    if select_limit:
+        query += ' limit {}'.format(select_limit)
+    return 'SELECT {}  FROM ( {} ) order by {}'.format(item, query,
+                                                       time_column)
+
+
+@logging
+def select_oldest_from_table(tbl_name, time_column="TIME"):
+    query = 'SELECT {} FROM {} order by {} limit 1;'.format(time_column,
+                                                            tbl_name,
+                                                            time_column)
+    return query
+
+
+@logging
+def select_latest_from_table(tbl_name, time_column="TIME"):
+    query = 'SELECT {} FROM {} order by {} DESC limit 1;'.format(
+        time_column,
+        tbl_name,
+        time_column)
+    return query
+
+
+@logging
+def create_total_perf_table(tbl_name) -> str:
+    query = 'CREATE TABLE IF NOT EXISTS {}' \
+            '(TIME TimeStamp PRIMARY KEY  NOT NULL DEFAULT CURRENT_TIMESTAMP,\n' \
+            'CPU           REAL    NOT NULL,\n' \
+            'MEMORY        REAL    NOT NULL,\n' \
+            'DISK          REAL    ,\n' \
+            'DISK_IO_READ  INT     ,      \n' \
+            'DISK_IO_WRITE INT     , \n' \
+            'NET_IO_RECV   INT     ,\n' \
+            'NET_IO_SENT   INT     );'.format(tbl_name)
+    return query
+
+
+@logging
+def create_proc_perf_table(tbl_name) -> str:
+    return "CREATE TABLE IF NOT EXISTS {}" \
+           "(TIME TimeStamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n" \
+           "PID  INT,\n" \
+           "USER       TEXT,\n" \
+           "CPU        REAL    NOT NULL,\n" \
+           "MEM        REAL    NOT NULL,\n" \
+           "COMMAND    TEXT    NOT NULL);".format(tbl_name)
+
+
+@logging
+def insert_to_total_perf(tbl_name, item=None) -> str:
+    if not item:
+        return 'INSERT INTO {} VALUES (?,?,?,?,?,?,?,?)'.format(tbl_name)
+    if len(item) == 3:
+        return 'INSERT INTO {} (CPU,MEMORY,DISK) VALUES {}'.format(tbl_name,
+                                                                   item) if \
+            item[
+                0] < 100 else 'INSERT INTO {} (TIME,CPU,MEMORY) VALUES {}'.format(
+            tbl_name, item)
+    if len(item) == 4:
+        return 'INSERT INTO {} (TIME,CPU,MEMORY,DISK) VALUES {}'.format(
+            tbl_name,
+            item)
+    if len(item) == 7:
+        return 'INSERT INTO {}' \
+               ' (CPU,MEMORY,DISK,DISK_IO_READ, DISK_IO_WRITE,NET_IO_SENT, NET_IO_RECV)' \
+               ' VALUES {}'.format(tbl_name, item)
+    if len(item) == 8:
+        return 'INSERT INTO {}' \
+               ' (TIME,CPU,MEMORY,DISK,DISK_IO_READ, DISK_IO_WRITE,NET_IO_SENT, NET_IO_RECV)' \
+               ' VALUES {}'.format(tbl_name, item)
+
+
+@logging
+def insert_to_proc_perf(tbl_name, item=None, hasTIME=False) -> str:
+    if not item:
+        if hasTIME:
+            return 'INSERT INTO {} (TIME,PID, USER, CPU, MEM, COMMAND) VALUES (?,?,?,?,?,?)'.format(
+                tbl_name)
+        return 'INSERT INTO {} (PID, USER, CPU, MEM, COMMAND) VALUES (?,?,?,?,?)'.format(
+            tbl_name)
+    if len(item) == 6:
+        return 'INSERT INTO {} (TIME, PID, USER, CPU, MEM, COMMAND) VALUES {}'.format(
+            tbl_name, tuple(item))
+
+
+def select_tables_name():
+    return 'SELECT name FROM sqlite_master WHERE type="table"'
+
+@logging
+def select_item_by_pid(tbl_name, pid, item):
+    return 'SELECT {} FROM {} where "PID"={}'.format(item, tbl_name, pid)
+
+
+@logging
+def select_info_of_pid(tbl_name):
+    return 'SELECT DISTINCT PID,COMMAND,USER FROM {} where PID in (SELECT PID from {} group by PID)'.format(
+        tbl_name, tbl_name)
