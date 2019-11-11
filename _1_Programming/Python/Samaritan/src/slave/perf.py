@@ -24,9 +24,10 @@ def proc_perf(pname):
     :return:
     """
     target = [p for p in process_iter(attrs=['pid', 'name']) if
-              pname in p.info['name']]
+              pname.lower() in p.info['name'].lower()]
     result = []
     for p in target:
         with p.oneshot():
-            result.append((p.name(), p.cpu_percent(), p.memory_info()))
-    return str(result)
+            result.append((p.ppid(), p.username(), p.cpu_percent(),
+                           p.memory_percent(), p.name()))
+    return result
