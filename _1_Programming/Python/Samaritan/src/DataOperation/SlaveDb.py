@@ -28,7 +28,10 @@ class SlaveDb:
         :param item:
         :return:
         """
-        self.execute_sql(insert_factory, 'proc', PROC_PERF, item)
+        if isinstance(item, list) or isinstance(item, tuple):
+            self.execute_many_sql(item, insert_factory, 'proc', PROC_PERF)
+        else:
+            self.execute_sql(insert_factory, 'proc', PROC_PERF, item)
 
     def select(self, table, item=None, start_time=None, end_time=None):
         """
@@ -39,7 +42,7 @@ class SlaveDb:
         :param item: 列名(str)
         :return:
         """
-        if start_time == 0 or start_time == '0':
+        if start_time == 0 or start_time=='0':
             # 传入start_time参数并且参数值为0
             # 只发生在该节点第一次被加入slave时
             cursor = self.execute_sql(select_oldest_from_table, table)
@@ -82,3 +85,24 @@ class SlaveDb:
         except Exception:
             raise
         return cursor
+
+    def get_result_0(self, func, *args, **kwargs):
+        """
+        获取执行结果中第0列的内容（用于select 某一列）
+        :param func:
+        :param args:
+        :param kwargs:
+        :return: list
+        """
+        return [col[0] for col in
+                self.execute_sql(func, *args, **kwargs).fetchall()]
+
+    def get_result_1(self, func, *args, **kwargs):
+        """
+        获取执行结果中第0行第0列个元素（用于获取时间）
+        :param func:
+        :param args:
+        :param kwargs:
+        :return: one element
+        """
+        return self.execute_sql(func, *args, **kwargs).fetchone()[0]
