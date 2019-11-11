@@ -17,9 +17,23 @@ def index():
 
 
 @app.route('/slave/<slave_ip>')
-def data(slave_ip):
+def proc_data(slave_ip):
+    d = MasterDb(DBPATH)
+    pids = d.get_pids_and_name(slave_ip)
+    return render_template('slave.html', slave_ip=slave_ip, arr=pids)
+
+
+@app.route('/slave/<slave_ip>/total')
+def total_data(slave_ip):
     d = MasterDb(DBPATH)
     bar = d.draw(slave_ip)
+    return render_template('data.html', plot=bar)
+
+
+@app.route('/pid/<slave_ip>/<pid>')
+def data(slave_ip, pid):
+    d = MasterDb(DBPATH)
+    bar = d.draw(slave_ip, pid)
     return render_template('data.html', plot=bar)
 
 
