@@ -1,70 +1,60 @@
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class SAP {
 
-    private Digraph digraph;
-    private final int root;
+    private final Digraph digraph;
 
 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
         digraph = new Digraph(G);
-        root = findRoot();
+
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
+        validateVertex(v);
+        validateVertex(w);
         int anc = ancestor(v, w);
-        if (anc == -1)
+        if (anc == -1) {
             return -1;
-        int result = -2;
-
-        for (int x : getAncestorPath(v, anc))
-            result += 1;
-        for (int x : getAncestorPath(w, anc))
-            result += 1;
-        return result;
+        }
+        BreadthFirstDirectedPaths vBFS = new BreadthFirstDirectedPaths(digraph, v);
+        BreadthFirstDirectedPaths wBFS = new BreadthFirstDirectedPaths(digraph, w);
+        return vBFS.distTo(anc) + wBFS.distTo(anc);
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
-        Stack<Integer> vAncestor = getAncestor(v);
-        Stack<Integer> wAncestor = getAncestor(w);
-        int result = -1;
-        while (!vAncestor.isEmpty() && !wAncestor.isEmpty()) {
-            int x = vAncestor.pop();
-            int y = wAncestor.pop();
-            if (x == y)
-                result = x;
-            else
-                break;
-        }
-        return result;
-
-    }
-
-    private Stack<Integer> getAncestor(int v) {
-        validateVertex(v);
-        BreadthFirstDirectedPaths BFS = new BreadthFirstDirectedPaths(digraph, v);
-        Stack<Integer> result = new Stack<>();
-        for (int w : BFS.pathTo(root)) {
-            result.push(w);
-        }
-        return result;
-    }
-
-    private Iterable<Integer> getAncestorPath(int v, int w) {
         validateVertex(v);
         validateVertex(w);
-        BreadthFirstDirectedPaths BFS = new BreadthFirstDirectedPaths(digraph, v);
-        return BFS.pathTo(w);
-    }
+        BreadthFirstDirectedPaths vBFS = new BreadthFirstDirectedPaths(digraph, v);
+        BreadthFirstDirectedPaths wBFS = new BreadthFirstDirectedPaths(digraph, w);
+        // if (vBFS.hasPathTo(w) && wBFS.hasPathTo(v))  // has cycle
+        //     return vBFS.distTo(w) < wBFS.distTo(v) ? v : w;
+        // if (vBFS.hasPathTo(w))
+        //     return w;
+        // if (wBFS.hasPathTo(v))
+        //     return v;
+        int anc = -1;
+        int minLength = Integer.MAX_VALUE;
+        for (int u = 0; u < digraph.V(); ++u) {
+            if (vBFS.hasPathTo(u) && wBFS.hasPathTo(u)) {
+                int dist = vBFS.distTo(u) + wBFS.distTo(u);
+                if (dist < minLength) {
+                    minLength = dist;
+                    anc = u;
+                }
+            }
+        }
+        return anc;
 
+
+    }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
@@ -90,7 +80,7 @@ public class SAP {
             for (int y : w) {
                 int ans = ancestor(x, y);
                 if (ans == -1) throw new IllegalArgumentException();
-                if (length(ans, root) < min) {
+                if (length(x, y) < min) {
                     result = ans;
                     min = length(x, ans) < length(y, ans) ? length(x, ans) : length(y, ans);
                 }
@@ -105,21 +95,6 @@ public class SAP {
                     "vertex " + v + " is not between 0 and " + (digraph.V() - 1));
     }
 
-    int findRoot() {
-        int result = -1;
-        for (int v = 0; v < digraph.V(); v++) {
-            if (digraph.outdegree(v) == 0)
-                if (result == -1)
-                    result = v;
-                else
-                    throw new IllegalArgumentException("Invalid hypernyms! Has more than one root");
-        }
-        if (result == -1)
-            throw new IllegalArgumentException("Invalid hypernyms! Has no root");
-        else
-            return result;
-
-    }
 
     // do unit testing of this class
     public static void main(String[] args) {
@@ -128,14 +103,11 @@ public class SAP {
         SAP sap = new SAP(G);
         while (!StdIn.isEmpty()) {
             int v = StdIn.readInt();
-            // int w = StdIn.readInt();
-            // int length = sap.length(v, w);
-            // int ancestor = sap.ancestor(v, w);
-            // StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+            int w = StdIn.readInt();
+            int length = sap.length(v, w);
+            int ancestor = sap.ancestor(v, w);
+            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
             StdOut.printf("path = \n");
-            for (int x : sap.getAncestor(v)) {
-                StdOut.printf("%d \n", x);
-            }
         }
         // int v = 1;
         // int w = 9;
