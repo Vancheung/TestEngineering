@@ -242,7 +242,6 @@ class DoubleLinkedList:
         self.head.next = self.tail
         self.tail.prev = self.head
         self.counter = 0
-
 ```
 
 双链表的操作如下：
@@ -285,7 +284,6 @@ class DoubleLinkedList:
         node.prev.next = node.next
         node.next.prev = node.prev
         self.counter -= 1
-
 ```
 
 ## 六、堆（Heap）
@@ -307,7 +305,6 @@ def heappush(heap, item):
     """Push item onto heap, maintaining the heap invariant."""
     heap.append(item)
     _siftdown(heap, 0, len(heap)-1)
-
 ```
 
 其中，调整操作_siftdown()的实现：如果堆的有序状态因为某个节点比它的父节点小而打破，则交换两个节点的值，向上遍历，直到遇到一个更小的父节点则结束。
@@ -326,7 +323,6 @@ def _siftdown(heap, startpos, pos):
             continue
         break
     heap[pos] = newitem
-
 ```
 
 #### 2、弹出节点：
@@ -343,7 +339,6 @@ def heappop(heap):
         _siftup(heap, 0)
         return returnitem
     return lastelt
-
 ```
 
 其中，调整操作_siftup()的实现：如果堆的有序状态因为某个节点比它的子节点大而破坏了，那么可以通过将它和它的子节点中较小的一个交换位置，来恢复堆的有序性。交换可能会打破子节点的有序状态，因此需要不断向下修复，直到该节点的子节点都比它小或到达了堆的底部。heapq中的做法是，先与两个子节点中较小的交换位置，直到下沉到叶节点，再对该叶节点进行一次siftdown()操作。
@@ -368,7 +363,6 @@ def _siftup(heap, pos):
     # to its final resting place (by sifting its parents down).
     heap[pos] = newitem
     _siftdown(heap, startpos, pos)
-
 ```
 
 #### 3、其他接口
@@ -400,7 +394,6 @@ expensive = heapq.nlargest(3, portfolio, key=lambda s: s['price'])
 
 print(cheap)
 print(expensive)
-
 ```
 
 返回结果
@@ -408,7 +401,6 @@ print(expensive)
 ```python
 [{'name': 'YHOO', 'shares': 45, 'price': 16.35}, {'name': 'FB', 'shares': 200, 'price': 21.09}, {'name': 'HPQ', 'shares': 35, 'price': 31.75}]
 [{'name': 'AAPL', 'shares': 50, 'price': 543.22}, {'name': 'ACME', 'shares': 75, 'price': 115.65}, {'name': 'IBM', 'shares': 100, 'price': 91.1}]
-
 ```
 
 ### 2、优先级队列（Priority Queue）
@@ -427,7 +419,6 @@ class PriorityQueue:
 
     def pop(self):
         return heapq.heappop(self._queue)[-1]
-
 ```
 
 heappush(heap,item) 方法接收的item可以是一个元组，这样当需要插入一个元素时，会依次比较元组中的每一个元素，如果相同或元素不可比较则比较下一个元素。由于这个原理，可以在队列中为每一个元素指定一个唯一的index值，这样对于值相同的元素，插入时不会出现 TypeError: unorderable types: Item() < Item() 错误，并且能够保证元素插入时的稳定性。
@@ -444,10 +435,161 @@ class Node:
         self.val = val
         self.left = None
         self.right = None
-
 ```
 
-### 2、二叉查找树（Binary Search Tree）
+### 2、二叉树的创建
+
+定义一个Tree结构和一个辅助队列，队列中存放当前节点中left或right至少有一个为None的节点。add()接口定义了如何插入一个元素：将新节点加入队列，队首节点无左子树，则元素插入到队首节点的左子树，否则插入队首节点的右子树，并从队列中弹出队首节点。
+
+```python
+class Tree:
+    def __init__(self):
+        self.root = None
+        self.nodes = []
+
+    def add(self, elem):
+        node = Node(elem)
+        self.nodes.append(node)
+        if not self.root:
+            self.root = node            
+        else:
+            if not self.nodes[0].left:
+                self.nodes[0].left = node
+            else:
+                self.nodes[0].right = node
+                self.nodes = self.nodes[1:]
+```
+
+创建树的函数可以如下定义：输入为一个可迭代的序列，输出为树的root节点，输出的数据类型为Node.
+
+```python
+def create_tree(data) -> Node:
+    t = Tree()
+    for v in data:
+        t.add(v)
+    return t.root
+```
+
+### 3、二叉树的遍历
+
+二叉树的前、中、后序遍历，是指遍历结果中根节点的位置。
+
+1、前序遍历
+
+前序遍历顺序为根-左-右，通过递归实现前序遍历：
+
+```python
+def pre_order(root: Node, data: list):
+    if not root:
+        return
+    data.append(root)
+    pre_order(root.left, data)
+    pre_order(root.right, data)
+```
+
+也可以通过栈来实现树节点的缓存，栈中元素的弹出顺序即为遍历结果，但在入栈时要先压入右子树，再压入左子树，这样在弹出时才能先弹出左子树的节点。
+
+```python
+def pre_order_stack(root: Node):
+    stack = []
+    stack.append(root)
+    data = []
+    while stack:
+        cur = stack.pop()
+        data.append(cur)
+        if cur.right:
+            stack.append(cur.right)
+        if cur.left:
+            stack.append(cur.left)
+    return data
+```
+
+2、中序遍历
+
+中序遍历的顺序为 左-根-右，递归的实现与前序遍历类似，将节点加入结果的操作放在左右子树的递归操作之间。中序遍历一个二叉查找树，返回的即为顺序排序后的序列。
+
+```python
+def in_order(root: Node, data: list):
+    if not root:
+        return
+    in_order(root.left, data)
+    data.append(root)
+    in_order(root.right, data)
+```
+
+而用栈来实现中序遍历，用cur记录当前的节点，当前节点无左子树时，弹出该节点，cur指向栈顶元素的右子树，如果右子树也为空，则再弹出一个节点。
+
+```python
+def in_order_stack(root: Node):
+    stack = []
+    data = []
+    cur = root
+    while stack or cur:
+        while cur:
+            stack.append(cur)
+            cur = cur.left
+        top = stack.pop()
+        data.append(top)
+        cur = top.right
+    return data
+```
+
+3、后序遍历
+
+后序遍历结果为左-右-根，递归：
+
+```python
+def post_order(root: Node, data: list):
+    if not root:
+        return
+    post_order(root.left, data)
+    post_order(root.right, data)
+    data.append(root)
+```
+
+使用栈进行后续遍历，与先序遍历类似，除了cur节点加入结果列表这一步，放在左右子树入栈之后。以及result列表需要逆序输出，因为根元素总是更先被加入结果列表。
+
+```python
+def post_order_stack(root: Node):
+    stack = []
+    data = []
+    stack.append(root)
+    while stack:
+        cur = stack.pop()
+        if cur.left:
+            stack.append(cur.left)
+        if cur.right:
+            stack.append(cur.right)
+        data.append(cur)
+    return data[::-1]
+```
+
+4、层序遍历
+
+层序遍历使用队列，依次将队首节点的左右子树加入队列，然后弹出队首节点。
+
+与前序、中序、后续遍历不同，它们使用的是DFS（深度优先遍历），而层序遍历使用的是BFS（广度优先遍历）。
+
+在python中可以借助collections.deque作为队列的数据结构，它在双端的插入和弹出操作性能优于list。插入：list.append() / deque.append() ，弹出： list.pop(0) / deque.popleft().
+
+```python
+def bfs(root: Node):
+    if not root:
+        return []
+    queue = deque()
+    queue.append(root)
+    data = []
+    while queue:
+        cur = queue.popleft()
+        data.append(cur)
+        if cur.left:
+            queue.append(cur.left)
+        if cur.right:
+            queue.append(cur.right)
+    return data
+```
+
+### 4、二叉查找树（Binary Search Tree）
 
 对有序结构（如数组）进行查找时，二分查找的复杂度是O(logn)，但要保证数组有序，排序操作的复杂度可能达到O(nlogn)，如果要在插入时保证数组有序，插入操作的复杂度为O(n).
 
@@ -488,10 +630,11 @@ class BST:
         elif key > root_node.val:
             root_node.right = self._put(root_node.right, key, val)
         return root_node
-
 ```
 
 这种方式在插入的数据是均匀的时候效率比较高，最好情况下树的高度为logN，而当插入顺序有序时达到最坏情况，树的高度与数据长度相同。
+
+
 
 ## 八、哈希表（Hash Table）
 
@@ -523,7 +666,6 @@ if __name__ == '__main__':
         item = HashItem(0, i)
         table.add(item)
     print(len(table))
-
 ```
 
 而重写hash和eq函数后，len(table)的结果变为1，因为每次hash(key)的结果是同一个值，而eq函数比较的是key的值，所以key相同的元素其hash值和eq都相同，被视为同一个元素。
@@ -549,7 +691,6 @@ if __name__ == '__main__':
         item = HashItem(0, i)
         table.add(item)
     print(len(table))
-
 ```
 
 而稍微修改一下eq函数，让其比较value的值模5的结果，len(table)的值变为5。
@@ -559,7 +700,6 @@ if __name__ == '__main__':
         if isinstance(other, self.__class__):
             return self.value % 5 == other.value % 5
         return False
-
 ```
 
 注意，python3内部对于hash函数的处理，在单次运行时同一个键的hash结果是一致的，但是重新运行后值可能发生变化，例如在两个不同的解释器中执行hash('a')，结果如下：
@@ -570,7 +710,6 @@ if __name__ == '__main__':
 
 >>> hash('a')
 -1314642242
-
 ```
 
 因此，**不要尝试依赖系统固定的hash值**。
@@ -620,7 +759,6 @@ class Graph:
             s += "\n"
         return s
 
-
 ```
 
 ### 2、DFS（深度优先搜索）
@@ -639,7 +777,6 @@ class DepthFirstSearch:
         self.count += 1
         self.marked[v] = True
         [self.dfs(graph, w) for w in graph.adj(v) if not self.marked[w]]
-
 ```
 
 也可以使用栈来实现DFS，每次弹出栈顶节点，然后将它的邻接点压入栈。
@@ -653,7 +790,6 @@ class DepthFirstSearch:
                 visited.add(vertex)
                 stack.extend(graph.adj(vertex) - visited)
         return visited
-
 ```
 
 ### 3、BFS（广度优先搜索）
@@ -682,7 +818,6 @@ class BreadFirstSearch:
                     self.distTo[w] = self.distTo[v] + 1
                     self.marked[w] = True
                     q.append(w)
-
 ```
 
 ### 4、拓扑排序
@@ -708,7 +843,6 @@ class DepthFirstOrder:
             if not self.marked[w]:
                 self.dfs(graph, w)
         self.reversePost.appendleft(v)
-
 ```
 
 ### 5、连通图
@@ -740,7 +874,6 @@ class CC:
 
     def connected(self, v: int, w: int) -> bool:
         return self.id[v] == self.id[w]
-
 ```
 
 #### 有向图
