@@ -14,12 +14,12 @@
 
 2019/10/10
 
-[[Python标准库][1]sys——系统相关的参数和函数](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191010_Python_sys_module.md)
+[【Python标准库】【1】sys——系统相关的参数和函数](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191010_Python_sys_module.md)
 
 
 2019/10/30
 
-[【Python标准库】【2】collection——容器数据类型](ps://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191030_Python_collections_module.md)
+[【Python标准库】【2】collection——容器数据类型](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191030_Python_collections_module.md)
 
 
 2019/12/14
