@@ -10,13 +10,11 @@ Python技术tips
 
 【数据结构与算法】
 
-[Python数据结构（1）——Python内置类型list、set、dict原理浅析](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20190916_Python_Data_Structure.md)
+[Python数据结构（1）——Python内置类型list、set、dict原理浅析(https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20190916_Python_Data_Structure.md)
 
-[Python数据结构（2）——简单数据结构的实现]
-(https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191214_Python_Data_Structure_2.md)
+[Python数据结构（2）——简单数据结构的实现](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20191214_Python_Data_Structure_2.md)
 
-[Python数据结构与算法（3）——排序算法]
-(https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20200629_Python_Data_Structure_3.md)
+[Python数据结构与算法（3）——排序算法](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_04_Tech%20Tips/20200629_Python_Data_Structure_3.md)
 
 
 【库】
