@@ -43,3 +43,13 @@
    - 查看服务器列表：http://master ip:5000
    - 查看具体节点：直接点击节点ip，可以选择查看节点整体性能数据和进程列表中的数据
    - 此处查看的是数据库中完整的信息，包含历史记录中运行过，但当前已不在config.ini中的节点
+   
+
+## iOS
+- 修改 test_cases/device.ini，配置Xcode中使用的开发者账号、运行时间、手机的版本号和UDID等信息
+- 运行test_perf_manual.py
+查看性能统计数据
+统计结果表格：test_results/perf_result.csv （使用numbers打开，excel会有编码格式问题）
+统计报告图：
+- 运行src/perf/report_server.py
+- 查看本机IP，本地浏览器打开http://本机IP:5000/ ，根据任务ID可以查看性能统计数据
