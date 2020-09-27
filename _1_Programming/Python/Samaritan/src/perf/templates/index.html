@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>性能测试报告</title>
+</head>
+<style>
+    a {
+        color: #525C66;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    h5 {
+        font-size: 30px;
+        color: #0FCC0F;
+        font-weight: 300;
+        text-align: center;
+    }
+</style>
+<body>
+<div class="container">
+    <div class="row" id="dashboard">
+        <h5>任务id列表</h5>
+        <div>
+            {% for item in arr %}
+            <div class="artical">
+                <ul>
+                    <li><a href="/{{item}}">
+                        <span class="grey-text small-text" id="item">{{item}}</span>
+                    </a></li>
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+</body>
+</html>
