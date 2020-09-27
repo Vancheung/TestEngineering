@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>性能监视仪表盘</title>
+    <script src="../static/plotly-latest.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart" id="bar_graph">
+                <script>
+                    var graphs = {{ data | safe }};
+                    var layout = {
+                        barmode: 'stack'
+                    };
+                    Plotly.newPlot('bar_graph', graphs, layout, {});
+                </script>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
