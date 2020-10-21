@@ -3,6 +3,8 @@
 """
 -------------------------------------------------------------------------------
 Describe: Use xcrun xctrace to record performance and analyse trace file
+Usage: 
+    python3 TraceDecoder.py --trace tracename --time 3600 --process processname --template MyTemplate.tracetemplate --udid device_udid
 Author: Vancheung
 -------------------------------------------------------------------------------
 """
