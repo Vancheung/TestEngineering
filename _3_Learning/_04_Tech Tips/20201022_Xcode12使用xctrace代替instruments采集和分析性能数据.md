@@ -62,5 +62,6 @@ core-animation-fps-estimate 和 activity-monitor-process-live，
 解析命令示例：
 > xcrun xctrace export --input recording.trace --output recording_fps.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="core-animation-fps-estimate"]'
 > xcrun xctrace export --input recording.trace --output recording_activity.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="activity-monitor-process-live"]'
-3、解析脚本
+
+## 3、解析脚本
 解析出的xml文件中，对于相同的值，在第一次出现的时候会赋予一个id，下一次出现的时候会直接以ref="id"显示，例如下文中的fps=14，percent=4，因此解析xml文件时需要还原数据。
