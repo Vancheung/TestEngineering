@@ -53,27 +53,7 @@ description:
 --toc       ：      导出文件结构
 --xpath <expression>     ： 根据 XPath导出指定数据
 使用--toc参赛，会解析出当前目录结构，例如使用上文中的模板文件，可以解析出如下数据：
-<?xml version="1.0"?>
 
-<trace-toc>
-    <run number="1">
-        <info>
-            <target>
-                <device name="Van (14.0.1)" uuid="xxx"/>
-            </target>
-            <summary/>
-        </info>
-        <data>
-            <table schema="activity-monitor-system"/>
-            <table schema="core-animation-fps-estimate"/>
-            <table schema="activity-monitor-process-ledger"/>
-            <table schema="graphics-statistic"/>
-            <table schema="sysmon-process"/>
-            <table schema="sysmon-system"/>
-            <table schema="activity-monitor-process-live"/>
-        </data>
-    </run>
-</trace-toc>
 对于性能采集的数据（CPU、MEM、IO_READ、IO_WRITE、GPU、FPS，需要解析的是
 core-animation-fps-estimate 和 activity-monitor-process-live，
 
