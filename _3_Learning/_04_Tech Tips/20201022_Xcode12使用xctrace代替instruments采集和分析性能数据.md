@@ -76,22 +76,11 @@ description:
 </trace-toc>
 对于性能采集的数据（CPU、MEM、IO_READ、IO_WRITE、GPU、FPS，需要解析的是
 core-animation-fps-estimate 和 activity-monitor-process-live，
+
 即Xpath中/trace-toc/run[@number="1"]/data/table[@schema="core-animation-fps-estimate"]和/trace-toc/run[@number="1"]/data/table[@schema="activity-monitor-process-live"]
+
 解析命令示例：
 > xcrun xctrace export --input recording.trace --output recording_fps.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="core-animation-fps-estimate"]'
 > xcrun xctrace export --input recording.trace --output recording_activity.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="activity-monitor-process-live"]'
 3、解析脚本
 解析出的xml文件中，对于相同的值，在第一次出现的时候会赋予一个id，下一次出现的时候会直接以ref="id"显示，例如下文中的fps=14，percent=4，因此解析xml文件时需要还原数据。
-<row>
-    <start-time id="1" fmt="00:58.703.117">58703117000</start-time>
-    <duration id="2" fmt="1.01 s">1012006000</duration>
-    <fps id="3" fmt="14 FPS">14.000000000</fps>
-    <percent id="4" fmt="4.0%">4.000000000</percent>
-</row>
-<row>
-    <start-time id="5" fmt="00:57.692.247">57692247000</start-time>
-    <duration id="6" fmt="1.01 s">1010870000</duration>
-    <fps ref="3"/>
-    <percent ref="4"/>
-</row>
-完整的采集+解析脚本如下：
