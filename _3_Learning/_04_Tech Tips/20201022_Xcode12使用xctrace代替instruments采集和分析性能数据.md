@@ -38,6 +38,7 @@ description:
 > xcrun xctrace record --template MyTemplate.tracetemplate --all-processes --output 'recording.trace' --device my_udid --time-limit 60s
 
 ps：使用自定义模板会上报一个xctrace[87948:4893789] [MT] DVTAssertions: Warning in /Library/Caches/com.apple.xbs/Sources/Instruments/Instruments-64540.151/Theming/XRTheme.mm:213 的warning，已确定是Apple的bug，将在未来版本修复，不影响命令执行。
+
 （3）使用xctrace export命令将trace解析为xml文件
 // 查看命令用法
 > xcrun xctrace export
@@ -52,16 +53,19 @@ description:
 --output <path>   ：  导出的xml文件路径
 --toc       ：      导出文件结构
 --xpath <expression>     ： 根据 XPath导出指定数据
-使用--toc参赛，会解析出当前目录结构，例如使用上文中的模板文件，可以解析出如下数据：
+使用--toc参数，会解析出当前目录结构，例如使用上文中的模板文件，可以解析出如下数据：
 
 对于性能采集的数据（CPU、MEM、IO_READ、IO_WRITE、GPU、FPS，需要解析的是
 core-animation-fps-estimate 和 activity-monitor-process-live，
 
 即Xpath中/trace-toc/run[@number="1"]/data/table[@schema="core-animation-fps-estimate"]和/trace-toc/run[@number="1"]/data/table[@schema="activity-monitor-process-live"]
 
+
 解析命令示例：
-> xcrun xctrace export --input recording.trace --output recording_fps.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="core-animation-fps-estimate"]'
-> xcrun xctrace export --input recording.trace --output recording_activity.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="activity-monitor-process-live"]'
+
+xcrun xctrace export --input recording.trace --output recording_fps.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="core-animation-fps-estimate"]'
+
+xcrun xctrace export --input recording.trace --output recording_activity.xml --xpath '/trace-toc/run[@number="1"]/data/table[@schema="activity-monitor-process-live"]'
 
 ## 3、解析脚本
 解析出的xml文件中，对于相同的值，在第一次出现的时候会赋予一个id，下一次出现的时候会直接以ref="id"显示，例如下文中的fps=14，percent=4，因此解析xml文件时需要还原数据。
