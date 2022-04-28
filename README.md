@@ -1,7 +1,30 @@
-# TestEngineering
-测试工程方法论
+# Test & Dev Engineering
+
+几年过去，从测试转向测开，再到测试架构设计和全栈，相应的文档也需要重新调整一下。
 
 ## 【目录】
+
+### 1. 测试工程架构设计
+
+[测试工程系统架构设计](https://github.com/Vancheung/TestEngineering/tree/master/Architecture)
+
+
+### 2. 自动化测试工程实践
+
+[自动化测试工程实践](https://github.com/Vancheung/TestEngineering/tree/master/TestProject)
+
+
+### 3. 全栈开发
+
+[全栈开发之路](https://github.com/Vancheung/TestEngineering/tree/master/FullStack)
+
+
+### 4. LeetCode题记
+
+[LeetCode](https://github.com/Vancheung/TestEngineering/tree/master/LeetCode)
+
+
+————————————————————旧-————————————————————————
 
 ### 0.总览
 
@@ -29,6 +52,4 @@
 ### 3.Learning
 
 ##### 3.1 Python
-[精通Python设计模式](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_01_Python/%E7%B2%BE%E9%80%9APython%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)
-
-
+[精通Python设计模式](https://github.com/Vancheung/TestEngineering/blob/master/_3_Learning/_01_Python/%E7%B2%BE%E9%80%9APython%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F.md)~~
