@@ -1,6 +1,6 @@
 """ 安卓端微信摸鱼小工具 """ 
 
-ipmort uiautomator2
+import uiautomator2
 
 client = uiautomator2.connect("")
 
